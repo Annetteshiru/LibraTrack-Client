@@ -7,7 +7,7 @@ import StatsCard from '@/components/StatsCard';
 import { useAuthStore } from '@/store/auth.store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Users, ArrowLeftRight, AlertCircle, DollarSign, CalendarCheck, Boxes, Star, BarChart2, Settings } from 'lucide-react';
+import { BookOpen, Users, ArrowLeftRight, AlertCircle, Banknote, CalendarCheck, Boxes, Star, BarChart2, Settings } from 'lucide-react';
 import { formatDate, formatCurrency } from '@/lib/utils';
 
 function getGreeting() {
@@ -85,7 +85,7 @@ export default function DashboardPage() {
         <StatsCard title="Reserved" value={reservedBooks} icon={CalendarCheck} variant="default" />
         <StatsCard title="Overdue" value={s?.overdueCount ?? '—'} icon={AlertCircle} variant="danger" />
         <StatsCard title="Members" value={s?.totalMembers ?? '—'} icon={Users} variant="default" />
-        <StatsCard title="Unpaid Fines" value={s?.unpaidFinesTotal != null ? formatCurrency(Number(s.unpaidFinesTotal)) : '—'} icon={DollarSign} variant="danger" />
+        <StatsCard title="Unpaid Fines" value={s?.unpaidFinesTotal != null ? formatCurrency(Number(s.unpaidFinesTotal)) : '—'} icon={Banknote} variant="danger" />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-[1fr_1.2fr_1fr] gap-6">

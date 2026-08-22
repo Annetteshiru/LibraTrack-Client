@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/auth.store';
 import { reservationsService } from '@/services/reservations.service';
 import { booksService, type Book } from '@/services/books.service';
 import { QUERY_KEYS } from '@/lib/constants';
+import { getApiErrorMessage } from '@/lib/apiErrors';
 import DataTable from '@/components/DataTable';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -56,8 +57,8 @@ export default function PortalReservationsPage() {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.memberReservations(memberId) });
       toast.success('Reservation cancelled');
     },
-    onError: () => {
-      toast.error('Failed to cancel reservation');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to cancel reservation'));
     },
   });
 
@@ -70,27 +71,28 @@ export default function PortalReservationsPage() {
       setSelectedBookId(null);
       toast.success('Reservation created');
     },
-    onError: () => {
-      toast.error('Failed to reserve book');
+    onError: (error) => {
+      toast.error(getApiErrorMessage(error, 'Failed to reserve book'));
     },
   });
 
   const reservations = unwrapData<ReservationRow[]>(data?.data) ?? [];
   const books = unwrapData<Book[]>(booksData?.data) ?? [];
   const pending = reservations.filter((r) => r.status === 'PENDING');
-  const fulfilled = reservations.filter((r) => r.status === 'FULFILLED');
+  const readyPickup = reservations.filter((r) => r.status === 'READY_FOR_PICKUP');
+  const borrowed = reservations.filter((r) => r.status === 'BORROWED' || r.status === 'FULFILLED');
   const cancelled = reservations.filter((r) => r.status === 'CANCELLED');
   const expired = reservations.filter((r) => r.status === 'EXPIRED');
   const needle = q.trim().toLowerCase();
   const filteredReservations = reservations.filter((reservation) => {
     const statusMatch = !status || reservation.status === status;
     if (!needle) return statusMatch;
-    const text = `${reservation.bookTitle} ${reservation.bookAuthor} ${reservation.status}`.toLowerCase();
+    const text = `${reservation.bookTitle} ${reservation.bookAuthor} ${reservation.status} ${formatStatus(reservation.status)}`.toLowerCase();
     return statusMatch && text.includes(needle);
   });
   const totalPages = Math.max(1, Math.ceil(filteredReservations.length / 20));
   const pageRows = filteredReservations.slice((page - 1) * 20, page * 20);
-  const nextExpiry = pending
+  const nextExpiry = readyPickup
     .map((r) => daysUntil(r.expiresAt))
     .sort((a, b) => a - b)[0];
   const columns = [
@@ -105,6 +107,9 @@ export default function PortalReservationsPage() {
           <div className="min-w-0">
             <p className="line-clamp-1 font-medium text-text-primary">{reservation.bookTitle}</p>
             <p className="truncate text-xs text-text-secondary">{reservation.bookAuthor}</p>
+            {reservation.status === 'READY_FOR_PICKUP' && (
+              <p className="mt-1 text-xs font-medium text-accent">Pick up by {formatDate(reservation.expiresAt)}</p>
+            )}
           </div>
         </div>
       ),
@@ -160,7 +165,7 @@ export default function PortalReservationsPage() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <SummaryTile icon={Clock3} label="Pending" value={pending.length} />
-        <SummaryTile icon={CheckCircle2} label="Fulfilled" value={fulfilled.length} tone="success" />
+        <SummaryTile icon={CheckCircle2} label="Borrowed" value={borrowed.length} tone="success" />
         <SummaryTile icon={TimerReset} label="Next expiry" value={nextExpiry != null ? `${Math.max(0, nextExpiry)} days` : 'None'} />
         <SummaryTile icon={XCircle} label="Closed" value={cancelled.length + expired.length} tone="muted" />
       </div>
@@ -178,7 +183,7 @@ export default function PortalReservationsPage() {
         <Select value={status || 'ALL'} onValueChange={(value) => { setStatus(value === 'ALL' ? '' : value); setPage(1); }}>
           <SelectTrigger className="w-full"><SelectValue placeholder="All statuses" /></SelectTrigger>
           <SelectContent>
-            {['ALL', 'PENDING', 'FULFILLED', 'CANCELLED', 'EXPIRED'].map((option) => (
+            {['ALL', 'PENDING', 'READY_FOR_PICKUP', 'BORROWED', 'CANCELLED', 'EXPIRED'].map((option) => (
               <SelectItem key={option} value={option}>{option === 'ALL' ? 'All statuses' : formatStatus(option)}</SelectItem>
             ))}
           </SelectContent>
@@ -213,9 +218,11 @@ export default function PortalReservationsPage() {
 
       {/* New Reservation Dialog */}
       <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setSearch(''); setSelectedBookId(null); } }}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader><DialogTitle>Reserve a Book</DialogTitle></DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-[calc(100vw-2rem)] overflow-x-hidden p-0 sm:max-w-3xl">
+          <DialogHeader className="border-b border-border px-5 pb-4 pt-5 sm:px-6">
+            <DialogTitle>Reserve a Book</DialogTitle>
+          </DialogHeader>
+          <div className="max-h-[min(64vh,34rem)] space-y-4 overflow-y-auto overflow-x-hidden px-5 py-4 sm:px-6">
             <div className="space-y-1.5">
               <Label>Search for a book</Label>
               <div className="relative">
@@ -253,7 +260,7 @@ export default function PortalReservationsPage() {
               <p className="text-sm text-text-secondary">No books found.</p>
             )}
           </div>
-          <DialogFooter>
+          <DialogFooter className="mx-0 mb-0 rounded-none px-5 py-4 sm:px-6">
             <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
             <Button
               disabled={!selectedBookId || createMutation.isPending}
@@ -297,14 +304,23 @@ function SummaryTile({
 }
 
 function ReservationBadge({ status }: { status: string }) {
-  if (status === 'PENDING') return <Badge>Pending</Badge>;
-  if (status === 'FULFILLED') return <Badge variant="secondary">Fulfilled</Badge>;
+  if (status === 'PENDING') return <Badge>{formatStatus(status)}</Badge>;
+  if (status === 'READY_FOR_PICKUP') return <Badge>{formatStatus(status)}</Badge>;
+  if (status === 'BORROWED' || status === 'FULFILLED') return <Badge variant="secondary">{formatStatus(status)}</Badge>;
   if (status === 'EXPIRED') return <Badge variant="destructive">Expired</Badge>;
-  return <Badge variant="outline">{status.toLowerCase()}</Badge>;
+  return <Badge variant="outline">{formatStatus(status)}</Badge>;
 }
 
 function formatStatus(status: string) {
-  return status.charAt(0) + status.slice(1).toLowerCase();
+  const labels: Record<string, string> = {
+    PENDING: 'Pending',
+    READY_FOR_PICKUP: 'Ready for pickup',
+    BORROWED: 'Borrowed',
+    FULFILLED: 'Borrowed',
+    CANCELLED: 'Cancelled',
+    EXPIRED: 'Expired',
+  };
+  return labels[status] ?? status;
 }
 
 function unwrapData<T>(payload: unknown): T | undefined {

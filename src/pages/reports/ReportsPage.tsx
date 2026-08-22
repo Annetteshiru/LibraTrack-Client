@@ -10,11 +10,11 @@ import { useAuthStore } from '@/store/auth.store';
 import {
   AlertCircle,
   ArrowLeftRight,
+  Banknote,
   BarChart3,
   BookOpen,
   CheckCircle2,
   ClipboardList,
-  DollarSign,
   LibraryBig,
   ReceiptText,
   Users,
@@ -41,7 +41,10 @@ export default function ReportsPage() {
   const cats = unwrapData<{ categories?: { name: string; count: number }[] }>(inventory?.data)?.categories ?? [];
   const popularBooks = unwrapData<{ id: number; title: string; author?: string; borrowCount: number }[]>(popular?.data) ?? [];
 
-  const categoryChartData = cats.map((c) => ({ name: c.name, value: c.count }));
+  const categoryChartData = [...cats]
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 10)
+    .map((c) => ({ name: c.name, value: c.count }));
   const borrowingChartData = b ? [
     { name: 'Active', value: b.active },
     { name: 'Returned', value: b.returned },
@@ -82,7 +85,7 @@ export default function ReportsPage() {
         <StatsCard title="Total Books" value={s?.totalBooks ?? '—'} icon={LibraryBig} subtitle={`${availableCopies.toLocaleString()} copies available`} />
         <StatsCard title="Active Borrows" value={s?.activeBorrows ?? b?.active ?? '—'} icon={ArrowLeftRight} subtitle={`${circulationPercent}% of copies in circulation`} />
         <StatsCard title="Members" value={s?.totalMembers ?? m?.totalMembers ?? '—'} icon={Users} subtitle={`${m?.activeMembers ?? 0} active accounts`} />
-        <StatsCard title="Unpaid Fines" value={formatCurrency(fineUnpaid)} icon={DollarSign} variant={fineUnpaid > 0 ? 'danger' : 'success'} subtitle={`${finePaidPercent}% collected`} />
+        <StatsCard title="Unpaid Fines" value={formatCurrency(fineUnpaid)} icon={Banknote} variant={fineUnpaid > 0 ? 'danger' : 'success'} subtitle={`${finePaidPercent}% collected`} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(22rem,0.8fr)]">
@@ -94,7 +97,7 @@ export default function ReportsPage() {
             <p className="text-xs text-text-secondary">Current lending movement across active, returned, and overdue transactions.</p>
           </CardHeader>
           <CardContent className="p-4">
-            <ReportChart type="bar" height={220} data={borrowingChartData} />
+            <ReportChart type="pie" height={220} data={borrowingChartData} />
             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
               <ReportMetric label="Active" value={b?.active ?? 0} icon={ArrowLeftRight} />
               <ReportMetric label="Returned" value={b?.returned ?? 0} icon={CheckCircle2} tone="success" />

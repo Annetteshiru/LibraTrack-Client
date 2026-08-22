@@ -9,6 +9,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import type { ReactNode } from 'react';
 
 type ConfirmTone = 'danger' | 'warning' | 'success';
 
@@ -17,9 +18,12 @@ interface ConfirmDialogProps {
   title: string;
   description: string;
   confirmLabel: string;
+  eyebrow?: string;
   cancelLabel?: string;
   tone?: ConfirmTone;
   isPending?: boolean;
+  contentClassName?: string;
+  children?: ReactNode;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
 }
@@ -56,9 +60,12 @@ export default function ConfirmDialog({
   title,
   description,
   confirmLabel,
+  eyebrow,
   cancelLabel = 'Cancel',
   tone = 'warning',
   isPending = false,
+  contentClassName,
+  children,
   onOpenChange,
   onConfirm,
 }: ConfirmDialogProps) {
@@ -67,8 +74,8 @@ export default function ConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[30rem] overflow-y-auto rounded-2xl border border-border/80 bg-surface p-0 shadow-2xl shadow-primary/15" showCloseButton={!isPending}>
-        <div className={cn('relative bg-gradient-to-br p-5 pb-4', toneConfig.shellClass)}>
+      <DialogContent className={cn('max-w-[calc(100vw-2rem)] overflow-x-hidden rounded-2xl border border-border/80 bg-surface p-0 shadow-2xl shadow-primary/15 sm:max-w-[38rem]', contentClassName)} showCloseButton={!isPending}>
+        <div className={cn('relative bg-gradient-to-br p-5 pb-4', toneConfig.shellClass, children && 'pb-5')}>
           <div className={cn('absolute inset-x-0 top-0 h-1', toneConfig.railClass)} />
           <div className="flex gap-4">
             <div className={cn('flex size-12 shrink-0 items-center justify-center rounded-2xl ring-1 shadow-sm', toneConfig.iconClass)}>
@@ -76,12 +83,13 @@ export default function ConfirmDialog({
             </div>
             <DialogHeader className="min-w-0 gap-2 pt-0.5">
               <span className="w-fit rounded-full border border-border/80 bg-background/70 px-2.5 py-1 text-[0.68rem] font-bold uppercase tracking-[0.14em] text-text-secondary">
-                {toneConfig.eyebrow}
+                {eyebrow ?? toneConfig.eyebrow}
               </span>
               <DialogTitle className="text-xl font-bold tracking-tight text-text-primary">{title}</DialogTitle>
               <DialogDescription className="max-w-[34rem] text-sm leading-6 text-text-secondary">
                 {description}
               </DialogDescription>
+              {children && <div className="pt-2">{children}</div>}
             </DialogHeader>
           </div>
         </div>
