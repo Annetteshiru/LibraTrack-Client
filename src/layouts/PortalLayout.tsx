@@ -69,7 +69,7 @@ export default function PortalLayout() {
         <SheetHeader className="h-16 justify-center border-b border-white/10 px-4 py-0">
           <SheetTitle className="flex items-center gap-2 text-sidebar-fg">
             <BookOpen size={20} className="text-accent" />
-            LibraTrack
+            SomaHub
           </SheetTitle>
         </SheetHeader>
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-4" aria-label="Member mobile navigation">
@@ -96,7 +96,7 @@ export default function PortalLayout() {
           {sidebarOpen ? (
             <div className="flex w-full items-center gap-2">
               <BookOpen size={20} className="shrink-0 text-accent" />
-              <span className="text-lg font-bold tracking-tight text-sidebar-fg">LibraTrack</span>
+              <span className="text-lg font-bold tracking-tight text-sidebar-fg">SomaHub</span>
             </div>
           ) : (
             <BookOpen size={20} className="text-accent" />

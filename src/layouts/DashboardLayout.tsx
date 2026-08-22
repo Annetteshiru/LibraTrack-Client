@@ -79,7 +79,7 @@ export default function DashboardLayout() {
         <SheetHeader className="h-16 justify-center border-b border-white/10 px-4 py-0">
           <SheetTitle className="flex items-center gap-2 text-sidebar-fg">
             <BookOpen size={20} className="text-accent" />
-            LibraTrack
+            SomaHub
           </SheetTitle>
         </SheetHeader>
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-4" aria-label="Staff mobile navigation">
@@ -108,7 +108,7 @@ export default function DashboardLayout() {
           {sidebarOpen ? (
             <div className="flex items-center gap-2 w-full">
               <BookOpen size={20} className="text-accent shrink-0" />
-              <span className="font-bold text-sidebar-fg text-lg tracking-tight">LibraTrack</span>
+              <span className="font-bold text-sidebar-fg text-lg tracking-tight">SomaHub</span>
             </div>
           ) : (
             <BookOpen size={20} className="text-accent" />
