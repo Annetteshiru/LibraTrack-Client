@@ -18,6 +18,7 @@ export const QUERY_KEYS = {
     fines: ['reports', 'fines'] as const,
     members: ['reports', 'members'] as const,
     popularBooks: ['reports', 'popular-books'] as const,
+    activeBorrows: ['reports', 'active-borrows'] as const,
   },
   settings: ['settings'] as const,
   categories: ['categories'] as const,

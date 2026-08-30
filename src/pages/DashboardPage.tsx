@@ -7,7 +7,8 @@ import StatsCard from '@/components/StatsCard';
 import { useAuthStore } from '@/store/auth.store';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Users, ArrowLeftRight, AlertCircle, Banknote, CalendarCheck, Boxes, Star, BarChart2, Settings } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BookOpen, Users, ArrowLeftRight, ArrowRight, AlertCircle, Banknote, CalendarCheck, Boxes, Star, BarChart2, Settings } from 'lucide-react';
 import { formatDate, formatCurrency } from '@/lib/utils';
 
 function getGreeting() {
@@ -172,6 +173,25 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
+
+      <Card className="py-0">
+        <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="grid size-11 shrink-0 place-items-center rounded-full bg-accent/10 text-accent">
+              <ArrowLeftRight size={19} />
+            </div>
+            <div>
+              <p className="font-semibold text-text-primary">Actively Borrowed Books</p>
+              <p className="text-xs text-text-secondary">
+                {borrowedBooks === '—' ? 'No data yet' : `${borrowedBooks} book${borrowedBooks === 1 ? '' : 's'} currently checked out`} — see who has them and when due.
+              </p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate('/reports/active-borrows')}>
+            View full report <ArrowRight size={15} />
+          </Button>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

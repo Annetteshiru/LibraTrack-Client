@@ -17,6 +17,7 @@ import TransactionHistoryPage from '@/pages/transactions/TransactionHistoryPage'
 import ReservationsPage from '@/pages/reservations/ReservationsPage';
 import FinesPage from '@/pages/fines/FinesPage';
 import ReportsPage from '@/pages/reports/ReportsPage';
+import ActiveBorrowsReportPage from '@/pages/reports/ActiveBorrowsReportPage';
 import NotificationsPage from '@/pages/notifications/NotificationsPage';
 import SettingsPage from '@/pages/settings/SettingsPage';
 import PortalDashboardPage from '@/pages/portal/PortalDashboardPage';
@@ -52,6 +53,7 @@ export default function AppRoutes() {
         <Route path="reservations" element={<ReservationsPage />} />
         <Route path="fines" element={<FinesPage />} />
         <Route path="reports" element={<ReportsPage />} />
+        <Route path="reports/active-borrows" element={<ActiveBorrowsReportPage />} />
         <Route path="notifications" element={<NotificationsPage />} />
         <Route path="settings" element={<ProtectedRoute roles={['admin']}><SettingsPage /></ProtectedRoute>} />
         <Route path="profile" element={<ProfilePage />} />

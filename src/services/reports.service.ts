@@ -14,6 +14,22 @@ export const reportsService = {
   getFines: () => api.get('/reports/fines/'),
   getMembers: () => api.get('/reports/members/'),
   getPopularBooks: () => api.get('/reports/popular-books/'),
+  getActiveBorrows: (params: { page?: number; limit?: number; q?: string }) =>
+    api.get('/reports/active-borrows/', { params }),
   export: (type: 'csv', report: string) =>
     api.post('/reports/export', { type, report }, { responseType: 'blob' }),
 };
+
+export interface ActiveBorrowRow {
+  itemId: number;
+  bookId: number;
+  bookTitle: string;
+  bookAuthor: string;
+  bookIsbn: string;
+  bookCoverUrl: string | null;
+  memberId: number;
+  memberName: string;
+  membershipNumber: string;
+  borrowedAt: string;
+  dueDate: string;
+}

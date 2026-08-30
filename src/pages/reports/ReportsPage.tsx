@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { reportsService } from '@/services/reports.service';
 import { QUERY_KEYS } from '@/lib/constants';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import StatsCard from '@/components/StatsCard';
 import ReportChart from '@/components/ReportChart';
 import ExportButton from '@/components/ExportButton';
@@ -10,11 +12,12 @@ import { useAuthStore } from '@/store/auth.store';
 import {
   AlertCircle,
   ArrowLeftRight,
+  ArrowRight,
+  Banknote,
   BarChart3,
   BookOpen,
   CheckCircle2,
   ClipboardList,
-  Banknote,
   LibraryBig,
   ReceiptText,
   Users,
@@ -23,6 +26,7 @@ import { formatCurrency } from '@/lib/utils';
 
 export default function ReportsPage() {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   const { data: summary } = useQuery({ queryKey: QUERY_KEYS.reports.summary, queryFn: () => reportsService.getSummary() });
   const { data: borrowing } = useQuery({ queryKey: QUERY_KEYS.reports.borrowing, queryFn: () => reportsService.getBorrowing() });
@@ -136,6 +140,25 @@ export default function ReportsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Card className="py-0">
+        <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3">
+            <div className="grid size-11 shrink-0 place-items-center rounded-full bg-accent/10 text-accent">
+              <ArrowLeftRight size={19} />
+            </div>
+            <div>
+              <p className="font-semibold text-text-primary">Actively Borrowed Books</p>
+              <p className="text-xs text-text-secondary">
+                {s?.activeBorrows ?? b?.active ?? 0} book{(s?.activeBorrows ?? b?.active ?? 0) === 1 ? '' : 's'} currently checked out, by who and when due.
+              </p>
+            </div>
+          </div>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => navigate('/reports/active-borrows')}>
+            View full report <ArrowRight size={15} />
+          </Button>
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_24rem]">
         <Card className="py-0">

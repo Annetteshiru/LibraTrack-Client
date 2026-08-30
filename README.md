@@ -46,7 +46,6 @@ fines, notifications, reports, and member self-service.
 | Charts | Recharts |
 | Icons | Lucide React |
 | Notifications | Sonner |
-| Testing | Vitest + React Testing Library |
 
 ---
 
@@ -210,9 +209,7 @@ records are inserted into MySQL.
 | `npm run build` | Type-check and build production assets into `dist/` |
 | `npm run preview` | Serve the production build locally |
 | `npm run typecheck` | Run TypeScript without emitting files |
-| `npm run lint` | Lint source and test files |
-| `npm test` | Run unit tests once |
-| `npm run coverage` | Run tests with coverage output |
+| `npm run lint` | Lint source files |
 
 ---
 
@@ -284,7 +281,7 @@ responses can include `activeBorrowCount`, `maxBooks`, and `remainingSlots`.
 2. The server returns a short-lived JWT access token and sets an HttpOnly
    `refreshToken` cookie.
 3. The access token is stored in Zustand memory. The user profile is persisted in
-   `localStorage` under `SomaHub-auth`.
+   `localStorage` under `libratrack-auth`.
 4. Axios attaches the access token to API requests.
 5. On `401`, Axios calls `/auth/refresh` and retries the original request.
 6. Staff-created members can be forced to change their password before using the
@@ -300,20 +297,6 @@ npm run build
 
 The output is written to `dist/`. In production, serve the static files with a
 web server and proxy `/api` requests to the PHP backend.
-
-The repository includes a `Dockerfile` and `nginx.conf` for container-based
-static hosting.
-
----
-
-## Running Tests
-
-```bash
-npm test
-npm run coverage
-```
-
-Tests live under `tests/` and use `jsdom` with React Testing Library.
 
 ---
 
