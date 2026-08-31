@@ -32,4 +32,5 @@ export interface ActiveBorrowRow {
   membershipNumber: string;
   borrowedAt: string;
   dueDate: string;
+  status: 'ACTIVE' | 'OVERDUE' | 'RETURNED';
 }

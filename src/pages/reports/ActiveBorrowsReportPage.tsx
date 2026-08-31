@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { reportsService, type ActiveBorrowRow } from '@/services/reports.service';
 import { QUERY_KEYS } from '@/lib/constants';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import DataTable from '@/components/DataTable';
@@ -11,6 +12,18 @@ import ExportButton from '@/components/ExportButton';
 import { BookThumb, MemberAvatar } from '@/components/CatalogVisuals';
 import { formatDate } from '@/lib/utils';
 import { ArrowLeft, ArrowLeftRight } from 'lucide-react';
+
+const statusVariant: Record<ActiveBorrowRow['status'], 'default' | 'secondary' | 'destructive'> = {
+  ACTIVE: 'default',
+  RETURNED: 'secondary',
+  OVERDUE: 'destructive',
+};
+
+const statusLabel: Record<ActiveBorrowRow['status'], string> = {
+  ACTIVE: 'Active',
+  RETURNED: 'Returned',
+  OVERDUE: 'Overdue',
+};
 
 export default function ActiveBorrowsReportPage() {
   const navigate = useNavigate();
@@ -58,6 +71,7 @@ export default function ActiveBorrowsReportPage() {
     },
     { key: 'borrowedAt', header: 'Borrowed', sortValue: (r: ActiveBorrowRow) => r.borrowedAt, render: (r: ActiveBorrowRow) => <span className="text-sm text-text-secondary">{formatDate(r.borrowedAt)}</span> },
     { key: 'dueDate', header: 'Due', sortValue: (r: ActiveBorrowRow) => r.dueDate, render: (r: ActiveBorrowRow) => <span className="text-sm text-text-secondary">{formatDate(r.dueDate)}</span> },
+    { key: 'status', header: 'Status', sortValue: (r: ActiveBorrowRow) => r.status, render: (r: ActiveBorrowRow) => <Badge variant={statusVariant[r.status]}>{statusLabel[r.status]}</Badge> },
   ];
 
   return (
@@ -68,10 +82,10 @@ export default function ActiveBorrowsReportPage() {
             <ArrowLeft size={15} /> Back to Reports
           </Button>
           <h1 className="flex items-center gap-2 text-2xl font-bold text-text-primary">
-            <ArrowLeftRight size={22} className="text-accent" /> Actively Borrowed Books
+            <ArrowLeftRight size={22} className="text-accent" /> Book Borrowing Report
           </h1>
           <p className="mt-1 text-sm text-text-secondary">
-            {meta?.total ?? rows.length} book{(meta?.total ?? rows.length) === 1 ? '' : 's'} currently checked out, with who has them and when they&apos;re due.
+            {meta?.total ?? rows.length} borrow record{(meta?.total ?? rows.length) === 1 ? '' : 's'} — active, overdue, and returned — with who has them and when due.
           </p>
         </div>
         <ExportButton report="active-borrows" label="Export CSV" />
@@ -95,7 +109,7 @@ export default function ActiveBorrowsReportPage() {
             page={page}
             totalPages={meta?.totalPages}
             onPageChange={setPage}
-            emptyMessage="No books are currently borrowed."
+            emptyMessage="No borrowing records found."
           />
         </CardContent>
       </Card>
