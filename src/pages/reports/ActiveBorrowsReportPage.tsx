@@ -85,7 +85,7 @@ export default function ActiveBorrowsReportPage() {
             <ArrowLeftRight size={22} className="text-accent" /> Book Borrowing Report
           </h1>
           <p className="mt-1 text-sm text-text-secondary">
-            {meta?.total ?? rows.length} borrow record{(meta?.total ?? rows.length) === 1 ? '' : 's'} — active, overdue, and returned — with who has them and when due.
+            {meta?.total ?? rows.length} borrow record{(meta?.total ?? rows.length) === 1 ? '' : 's'} found.
           </p>
         </div>
         <ExportButton report="active-borrows" label="Export CSV" />
