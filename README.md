@@ -1,6 +1,6 @@
 # SomaHub - Frontend
 
-**Author:** Calvin Shawn
+**Author:** Annette Wambui
 **Date:** 2026-09-24
 
 SomaHub is a browser-based library management interface for administrators,
