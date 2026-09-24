@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { PasswordInput } from '@/components/ui/password-input';
 import { BookOpen } from 'lucide-react';
 
-export default function LoginPage() {
+export default function 
+LoginPage() {
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

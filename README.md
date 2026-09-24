@@ -1,5 +1,8 @@
 # SomaHub - Frontend
 
+**Author:** Calvin Shawn
+**Date:** 2026-09-24
+
 SomaHub is a browser-based library management interface for administrators,
 librarians, and members. The frontend is built with React, TypeScript, Vite, and
 Tailwind CSS, and consumes the PHP REST API from the server repository.
@@ -297,6 +300,15 @@ npm run build
 
 The output is written to `dist/`. In production, serve the static files with a
 web server and proxy `/api` requests to the PHP backend.
+
+---
+
+## Testing
+
+No automated test suite yet (no Vitest/Jest/RTL config). Verification during
+development was manual, through the running UI against the seeded demo
+accounts. Adding component/hook tests is the main gap versus a production-
+grade frontend.
 
 ---
 
